@@ -7,7 +7,9 @@ const debug = require('debug')('RIENumber');
 export default class RIENumber extends RIEStatefulBase {
 
     constructor(props) {
-        super(props);
+		super(props);
+
+		this.getStep = this.getStep.bind(this);
     }
 
     static propTypes = {
@@ -17,7 +19,23 @@ export default class RIENumber extends RIEStatefulBase {
 	static defaultProps = {
 		...RIEStatefulBase.defaultProps,
 		defaultValue: 0,
+		defaultStep: 1,
 	};
+
+	getStep() {
+		const splitVal = `${this.props.value}`.split('.');
+
+		if(splitVal.length < 2)
+			return 1;
+
+		const decimal = splitVal[1];
+
+		let step = 1;
+		for(let i = 0; i < decimal.length; i++)
+			step /= 10;
+
+		return step;
+	}
 
     validate = (value) => {
 		debug(`validate(${value})`)
@@ -43,7 +61,8 @@ export default class RIENumber extends RIEStatefulBase {
         if (element.nativeEvent.explicitOriginalTarget &&
             element.nativeEvent.explicitOriginalTarget == element.nativeEvent.originalTarget) {
             return;
-        }
+		}
+
         this.finishEditing();
     }
 
@@ -69,7 +88,8 @@ export default class RIENumber extends RIEStatefulBase {
         return <input disabled={(this.props.shouldBlockWhileLoading && this.state.loading)}
                       type="number"
                       className={this.makeClassString()}
-                      defaultValue={this.props.value}
+					  defaultValue={this.props.value}
+					  step={this.getStep()}
                       onInput={this.textChanged}
                       onBlur={this.elementBlur}
                       ref="input"

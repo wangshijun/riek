@@ -20514,6 +20514,8 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -20569,6 +20571,7 @@
 	            if (element.nativeEvent.explicitOriginalTarget && element.nativeEvent.explicitOriginalTarget == element.nativeEvent.originalTarget) {
 	                return;
 	            }
+
 	            _this.finishEditing();
 	        };
 
@@ -20598,6 +20601,7 @@
 	                type: 'number',
 	                className: _this.makeClassString(),
 	                defaultValue: _this.props.value,
+	                step: _this.getStep(),
 	                onInput: _this.textChanged,
 	                onBlur: _this.elementBlur,
 	                ref: 'input',
@@ -20605,8 +20609,25 @@
 	            }, _this.props.editProps));
 	        };
 
+	        _this.getStep = _this.getStep.bind(_this);
 	        return _this;
 	    }
+
+	    _createClass(RIENumber, [{
+	        key: 'getStep',
+	        value: function getStep() {
+	            var splitVal = ('' + this.props.value).split('.');
+
+	            if (splitVal.length < 2) return 1;
+
+	            var decimal = splitVal[1];
+
+	            var step = 1;
+	            for (var i = 0; i < decimal.length; i++) {
+	                step /= 10;
+	            }return step;
+	        }
+	    }]);
 
 	    return RIENumber;
 	}(_RIEStatefulBase3.default);
@@ -20615,7 +20636,8 @@
 	    format: _propTypes2.default.func
 	};
 	RIENumber.defaultProps = _extends({}, _RIEStatefulBase3.default.defaultProps, {
-	    defaultValue: 0
+	    defaultValue: 0,
+	    defaultStep: 1
 	});
 	exports.default = RIENumber;
 
